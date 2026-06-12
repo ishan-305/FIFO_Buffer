@@ -1,4 +1,4 @@
-module fifo_sync #(
+module fifo_sync (
   parameter DATA_WIDTH = 8,
   parameter DEPTH = 16,
   parameter ADDR_WIDTH = 4 // log2(DEPTH)
@@ -12,17 +12,18 @@ module fifo_sync #(
 
   output reg [DATA_WIDTH-1:0] dout,
   output reg full,
-  output reg empty
+  output reg empty,
+  output reg [ADDR_WIDTH:0] count 
 );
 
-  // ✅ FIFO Memory Array —> Storage is sequential
+  //  FIFO Memory Array —> Storage is sequential
   reg [DATA_WIDTH-1:0] fifo_mem [0:DEPTH-1];
 
-  // ✅ Pointers and Counter —> Sequential registers
+  //  Pointers and Counter —> Sequential registers
   reg [ADDR_WIDTH-1:0] write_ptr, read_ptr;
-  reg [ADDR_WIDTH:0] count;  // Stores occupancy — sequential
+  // reg [ADDR_WIDTH:0] count;  // Stores occupancy — sequential
 
-  // ✅ Write Logic —> Updates write_ptr & storage synchronously
+  //  Write Logic —> Updates write_ptr & storage synchronously
   always @(posedge clk) begin
     if (rst) begin
       write_ptr <= 0;
@@ -32,7 +33,7 @@ module fifo_sync #(
     end
   end
 
-  // ✅ Read Logic —> Updates read_ptr & output synchronously
+  //  Read Logic —> Updates read_ptr & output synchronously
   always @(posedge clk) begin
     if (rst) begin
       dout <= 0;
@@ -43,7 +44,7 @@ module fifo_sync #(
     end
   end
 
-  // ✅ Counter Logic —> Tracks occupancy synchronously
+  //  Counter Logic —> Tracks occupancy synchronously
   always @(posedge clk) begin
     if (rst) begin
       count <= 0;
@@ -56,7 +57,7 @@ module fifo_sync #(
     end
   end
 
-  // ✅ Status Flags —> Sequentially update flags
+  //  Status Flags —> Sequentially update flags
   always @(posedge clk) begin
     if (rst) begin
       full <= 0;
